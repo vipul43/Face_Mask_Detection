@@ -2,7 +2,9 @@
 Detecting the faces of the people in the scene and classify them as with mask and without mask. <br>
 The main task of face mask detection is divided into two subtasks. Face Detection task and Mask Classification task. In the former one, faces of humans from a scene(usually with high background noise) is detected. The detected faces are passed as input to the latter task, where the detected faces with mask and detected faces without mask are classified. More Details are provided in the subsequent sections on the tasks. <br>
 
-# Face Detection Using RetinaNet and OpenCV
+# Face Detection Using [RetinaFace](https://arxiv.org/abs/1905.00641) and OpenCV
+Pre-trained RetinaFace model is used as transfer learning for face detection task.
+
 
 # Mask Classification Using Deep Learning
 
