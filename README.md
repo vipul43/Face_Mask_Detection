@@ -13,12 +13,11 @@ Both the Python Package Index implementations are tested on a single [crowd imag
 
 ## More About retinaface-pytorch
 The model is trained and validated on [WIDERFACE](http://shuoyang1213.me/WIDERFACE/WiderFace_Results.html) dataset along with validation in [FDDB](https://drive.google.com/file/d/17t4WULUDgZgiSy5kpCax4aooyPaz3GQH/view). [PyTorch Lightning](https://github.com/PyTorchLightning/pytorch-lightning) module is used in the implmentation. RetinaFace in this implementation is build on the ResNet50 backbone. The following features are available in the implementation
-get_model(model_name: str, max_size: int, device: str = "cpu") -> Model # returns pre-trained model for usage
-
 ```
 vis_annotations(image: np.ndarray, annotations: List[Dict[str, Any]]) -> np.ndarray # utils.py, to draw faces and landmarks on detected faces
 model.eval() # to give out the evaluation result
 model.predict_jsons(image: np.array, confidence_threshold: float = 0.7, nms_threshold: float = 0.4) # to make predictions and return list of faces, landmarks and confidence score
+get_model(model_name: str, max_size: int, device: str = "cpu") -> Model # returns pre-trained model for usage
 ```
 
 # Mask Classification Using Deep Learning
