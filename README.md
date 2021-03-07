@@ -3,6 +3,7 @@ Detecting the faces of the people in the scene and classify them as with mask an
 The main task of face mask detection is divided into two subtasks. Face Detection task and Mask Classification task. In the former one, faces of humans from a scene(usually with high background noise) is detected. The detected faces are passed as input to the latter task, where the detected faces with mask and detected faces without mask are classified. More Details are provided in the subsequent sections on the tasks. <br>
 
 # Face Detection Using [RetinaFace](https://arxiv.org/abs/1905.00641) and OpenCV
+[branch retinaNet] <br>
 Pre-trained RetinaFace model is used for face detection task. Open Source Python Package Index implementation available [here](https://pypi.org/project/retinaface-pytorch/) is used.
 
 ## Implementations of RetinaFace
@@ -21,6 +22,7 @@ get_model(model_name: str, max_size: int, device: str = "cpu") -> Model # return
 ```
 
 # Mask Classification Using Deep Learning
+Convolutional Neural Network to tackel the binary classification problem of classifying face images into two classes, with mask(label=0) and with out mask(label=1). Evaluating the model on the validation dataset by calculating loss, accuracy, f1 score, precision and recall.
 
 # Dataset
 ## Real World Masked Face Detection(RWMFD) Dataset
@@ -29,9 +31,12 @@ Dataset contains unlabelled images of people with and without mask(typically wit
 
 ## Face Mask ~12K Dataset
 [Download here](https://www.kaggle.com/ashishjangra27/face-mask-12k-images-dataset) <br>
-Dataset contains labelled images of people's faces with masks and without masks. This dataset is intended to train Mask Classification Model. It contains 11784 images, 5883 are masked images and 5901 are unmasked images.
+Dataset contains labelled images of people's faces with masks and without masks. This dataset is intended to train Mask Classification Model. It contains 11784 images, 5883 are masked images and 5901 are unmasked images. Of the images, 10000 are intended to train the model, 800 images are intended to validated the model. <br>
+[Download here](https://drive.google.com/file/d/1NOzYPR3zAS8e2EFdRvjYpSBxg9RaDfxe/view?usp=sharing) <br>
+This is the open source version of the above mentioned dataset, remade for the purpose of this porject. The copyright details are mentioned in the dataset.
 
 # Performance
+Judging the performance of the model using loss, accuracy, f1 score, precision and recall as metrics.
 
 # API
 
