@@ -31,7 +31,9 @@ Dataset contains unlabelled images of people with and without mask(typically wit
 
 ## Face Mask ~12K Dataset
 [Download here](https://www.kaggle.com/ashishjangra27/face-mask-12k-images-dataset) <br>
-Dataset contains labelled images of people's faces with masks and without masks. This dataset is intended to train Mask Classification Model. It contains 11784 images, 5883 are masked images and 5901 are unmasked images. Of the images, 10000 are intended to train the model, 800 images are intended to validated the model.
+Dataset contains labelled images of people's faces with masks and without masks. This dataset is intended to train Mask Classification Model. It contains 11784 images, 5883 are masked images and 5901 are unmasked images. Of the images, 10000 are intended to train the model, 800 images are intended to validated the model. <br>
+[Download here](https://drive.google.com/file/d/1NOzYPR3zAS8e2EFdRvjYpSBxg9RaDfxe/view?usp=sharing) <br>
+This is the open source version of the above mentioned dataset, remade for the purpose of this porject. The copyright details are mentioned in the dataset.
 
 # Performance
 Judging the performance of the model using loss, accuracy, f1 score, precision and recall as metrics.
