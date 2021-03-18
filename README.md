@@ -48,3 +48,6 @@ Judging the performance of the model using loss, accuracy, f1 score, precision a
 
 # Mentor
 - Dr Chandra Shekar Lakshminarayanan
+
+# Demo Video
+- [Flask Application](https://drive.google.com/file/d/1ehcv6U_bXQvZ2VeKX-6144VqhQqoEBU8/view?usp=sharing)
