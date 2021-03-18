@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Face Mask Detector</title>
+</head>
+
+
+<body style="background-color:rgb(99, 66, 150)">
+    <div class="container">
+        <h1 style="text-align:center;color: cyan;" >Face Mask Detector</h1>
+        <div>
+            <div class="input-group mb-3" style="width:25%">
+                <input type="file" class="custom-file-input" id="file" accept="image/*" onchange="loadFile(event)">
+                <label class="custom-file-label" for="file">Upload an image</label>
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-predict">Predict!</button>
+            <button style="display:none" type="button" class="btn btn-secondary" id="btn-loading">Loading...</button>
+        </div>
+        <div style="padding-top: 10px;">
+            <img style="max-width: 50%;max-height: 40%;" id="user_input"/>
+            <img style="max-width: 50%;max-height: 40%;" id="output_image"/>
+        </div>
+    </div>
+
+    <script>
+        var loadFile = function(event) {
+            var image = document.getElementById('user_input');
+            image.src = URL.createObjectURL(event.target.files[0]);
+        };
+        $(document).ready(function(){
+            $("#btn-predict").click(function(){
+                document.getElementById("btn-predict").style.display = "none";
+                document.getElementById("btn-loading").style.display = "unset";
+                var fd = new FormData();
+                var files = $('#file')[0].files;
+                
+                console.log(files);
+                // Check file selected or not
+                if(files.length > 0 ){
+                    fd.append('image',files[0]);
+                    console.log(files[0]);
+
+                    $.ajax({
+                        url: '/predict',
+                        type: 'post',
+                        data: fd,
+                        contentType: false,
+                        processData: false,
+                        success: function(response){
+                            if(response != 0){
+                                bytestring = response['b64image'];
+                                image = bytestring.split('\'')[1];
+                                $('#output_image').attr('src' , 'data:image/jpg;base64,'+image);
+                            }else{
+                                alert('file not uploaded');
+                            }
+                        }
+                    });
+                }else{
+                    alert("Please select a file or image.");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,4 +1,10 @@
-from flask import Flask, request, send_file
+'''
+HOW TO RUN THE FLASK APP? FLASK_APP=app.py flask run
+HOW TO KILL THE FLASK SERVER? Ctrl + C
+HOW TO RUN HOT RELOAD FLASK APP? FLASK_APP=app.py FLASK_ENV=development flask run
+'''
+
+from flask import Flask, request, send_file, render_template, jsonify
 import os
 import random
 import cv2 
@@ -8,6 +14,7 @@ import tensorflow as tf
 from keras.models import model_from_json
 from werkzeug.utils import secure_filename
 import numpy as np
+import base64
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
@@ -78,12 +85,12 @@ detector.eval()
 
 @webApp.route('/', methods=['GET'])
 def test():
-    return "Hi, Welcome to Face Mask detector!"
+    return render_template('index.html')
 
-@webApp.route('/predict', methods=['GET','POST'])
+@webApp.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
-        f = request.files['file']
+        f = request.files['image']
 
         # Save the file to ./uploads
         file_path = os.path.join(webApp.config['UPLOAD_FOLDER'], secure_filename(f.filename))
@@ -92,9 +99,7 @@ def predict():
         # Make prediction
         parent_image = cv2.imread(file_path)
         faces = retinaFace_detector(file_path, detector)
-        print(faces)
         for face in faces:
-            print('new face')
             if face != [] and valid_face_coord(face["bbox"]) and face["score"] > 0.95:
                 cropped_face = openCV_image_cropping(file_path, face["bbox"])
                 p = model.predict_single(cropped_face)
@@ -103,7 +108,10 @@ def predict():
         # save predictions to ./downloadds
         file_path_download = os.path.join(webApp.config['DOWNLOAD_FOLDER'], secure_filename(f.filename))
         cv2.imwrite(file_path_download, parent_image)
-        return send_file(file_path_download, mimetype='image/jpg')
+
+        with open(file_path_download, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+        return jsonify({'b64image': str(encoded_string)})
     return None
 
 
