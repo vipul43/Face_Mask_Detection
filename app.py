@@ -60,18 +60,12 @@ class CModel:
     return round(p[0][0])
 
   def read_model_from_file(self, file_path):
-    json_file = open(file_path, "r")
-    model = model_from_json(json_file.read())
-    json_file.close()
+    model = tf.keras.models.load_model(file_path)
     model.summary()
     return model
-  
-  def read_weights_from_file(self, file_path):
-    self.model.load_weights(file_path)
 
 def load_model():
-    cmodel = CModel("./utils/model0.json")
-    cmodel.read_weights_from_file("./utils/weights_model0.h5")
+    cmodel = CModel("./utils/model1_transferLearning.h5")
     return cmodel
 
 webApp = Flask(__name__)
