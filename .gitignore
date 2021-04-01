@@ -5,4 +5,9 @@
 __pycache__ 
 uploads/*
 downloads/*
+<<<<<<< HEAD
+utils/model1_transferLearning.h5
+utils/model0.h5
+=======
 utils/*
+>>>>>>> 04d122f7b3d1eab5c5a97eac868f6a6ccda105da
