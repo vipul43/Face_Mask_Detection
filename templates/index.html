@@ -57,13 +57,22 @@
                                 bytestring = response['b64image'];
                                 image = bytestring.split('\'')[1];
                                 $('#output_image').attr('src' , 'data:image/jpg;base64,'+image);
+                                document.getElementById("btn-predict").style.display = "unset";
+                                document.getElementById("btn-loading").style.display = "None";
+                                files = null;
                             }else{
                                 alert('file not uploaded');
+                                document.getElementById("btn-predict").style.display = "unset";
+                                document.getElementById("btn-loading").style.display = "None"; 
+                                files = null;
                             }
                         }
                     });
                 }else{
                     alert("Please select a file or image.");
+                    document.getElementById("btn-predict").style.display = "unset";
+                    document.getElementById("btn-loading").style.display = "None";
+                    files = null;
                 }
             });
         });

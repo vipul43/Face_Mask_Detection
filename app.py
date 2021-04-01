@@ -44,9 +44,9 @@ def valid_face_coord(face):
 
 def openCV_draw_boundary_box(image, face, p):
     if p==1:
-        cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 0, 255), 1)
+        cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 0, 255), 2)
     else:
-        cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 255, 0), 1)
+        cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 255, 0), 2)
 
 class CModel:
   def __init__(self, file_path):
@@ -65,7 +65,7 @@ class CModel:
     return model
 
 def load_model():
-    cmodel = CModel("./utils/model1_transferLearning.h5")
+    cmodel = CModel("./utils/model0.h5")
     return cmodel
 
 webApp = Flask(__name__)
