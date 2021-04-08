@@ -65,7 +65,7 @@ class CModel:
     return model
 
 def load_model():
-    cmodel = CModel("./utils/model0.h5")
+    cmodel = CModel("./utils/smodel1.h5")
     return cmodel
 
 webApp = Flask(__name__)
