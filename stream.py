@@ -45,7 +45,7 @@ while True:
                 cropped_face = openCV_image_cropping(frame, [x, y, x+w, y+h])
                 p = model.predict_single(cropped_face)
                 openCV_draw_boundary_box(frame, [x, y, x+w, y+h], p)
-            cv2.imshow('WEBCAM', frame)
+            cv2.imshow('FACE MASK DETECTOR', frame)
         key = cv2.waitKey(1)
     else:
         break
