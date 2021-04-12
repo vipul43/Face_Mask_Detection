@@ -2,15 +2,17 @@ import cv2
 import tensorflow as tf
 import numpy as np
 
+frame_width = 416
+frame_height = 416
+
 webcam = cv2.VideoCapture(0)
 # trained_face_data = cv2.CascadeClassifier('./utils/haarcascade_frontalface_default.xml')
 
-cfg = "./utils/yolov3-face.cfg"
-weights = "./utils/yolov3-wider_16000.weights"
-net = cv2.dnn.readNetFromDarknet(cfg, weights)
-print(net)
-net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
-net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+cfg = "./utils/yolov3.cfg"
+weights = "./utils/yolov3.weights"
+net = cv2.dnn.readNet(weights, cfg)
+# net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+# net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
 def get_outputs_names(net):
     # Get the names of all the layers in the network
@@ -19,6 +21,18 @@ def get_outputs_names(net):
     # Get the names of the output layers, i.e. the layers with unconnected
     # outputs
     return [layers_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+
+def valid_face_coord(face):
+    if len(face) >= 4:
+        if face[0] < 0:
+            return False
+        if face[1] < 0:
+            return False
+        if face[2] < 0:
+            return False
+        if face[3] < 0:
+            return False
+    return True
 
 def openCV_draw_boundary_box(image, face, p):
     if p==1:
@@ -52,23 +66,27 @@ skip_frame = 0
 while True:
     is_frame_read_success, frame = webcam.read()
     if is_frame_read_success:
-        # gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # print(gray_frame.shape)
-        blob = cv2.dnn.blobFromImage(frame, 1/255, (480, 640),[0, 0, 0], 1, crop=False)
-        print(blob.shape)
+        blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
         net.setInput(blob)
-        print(net)
-        print(net.getLayerNames())
-        print(net.getUnconnectedOutLayers())
-        # faces = net.forward([net.getLayerNames()[i[0] - 1] for i in net.getUnconnectedOutLayers()])
-        faces = net.forward()
-        print(faces.shape)
-        print(faces)
-        for face in faces:
-            (x, y, w, h)=face
-            cropped_face = openCV_image_cropping(frame, [x, y, x+w, y+h])
-            p = model.predict_single(cropped_face)
-            openCV_draw_boundary_box(frame, [x, y, x+w, y+h], p)
+        outs = net.forward(get_outputs_names(net))
+        for out in outs:
+            for face in out:
+                scores = face[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
+                if confidence > 0.5:
+                    center_x = int(face[0] * frame_width)
+                    center_y = int(face[1] * frame_height)
+                    w = int(face[2] * frame_width)
+                    h = int(face[3] * frame_height)
+                    x = int(center_x - w / 2)
+                    y = int(center_y - h / 2)
+                
+                    face_co_ordinates = [x, y, x+w, y+h]
+                    if(valid_face_coord(face_co_ordinates)):
+                        cropped_face = openCV_image_cropping(frame, [x, y, x+w, y+h])
+                        p = model.predict_single(cropped_face)
+                        openCV_draw_boundary_box(frame, [x, y, x+w, y+h], p)
         cv2.imshow('FACE MASK DETECTOR', frame)
         key = cv2.waitKey(1)
     else:
