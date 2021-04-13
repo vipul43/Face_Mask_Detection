@@ -2,14 +2,11 @@ import cv2
 import tensorflow as tf
 import numpy as np
 
-frame_width = 416
-frame_height = 416
-
 webcam = cv2.VideoCapture(0)
 # trained_face_data = cv2.CascadeClassifier('./utils/haarcascade_frontalface_default.xml')
 
-cfg = "./utils/yolov3.cfg"
-weights = "./utils/yolov3.weights"
+cfg = "./utils/yolov2-face.cfg"
+weights = "./utils/yolov2.weights"
 net = cv2.dnn.readNet(weights, cfg)
 # net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 # net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
@@ -65,6 +62,8 @@ model = CModel("./utils/model0.h5")
 skip_frame = 0
 while True:
     is_frame_read_success, frame = webcam.read()
+    print(frame.shape)
+    frame_height, frame_width = frame.shape[:2]
     if is_frame_read_success:
         blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
         net.setInput(blob)
