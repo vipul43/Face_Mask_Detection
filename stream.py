@@ -65,6 +65,7 @@ while True:
     print(frame.shape)
     frame_height, frame_width = frame.shape[:2]
     if is_frame_read_success:
+        print("success")
         blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
         net.setInput(blob)
         outs = net.forward(get_outputs_names(net))
