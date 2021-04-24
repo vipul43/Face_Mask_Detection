@@ -5,8 +5,8 @@ import numpy as np
 webcam = cv2.VideoCapture(0)
 # trained_face_data = cv2.CascadeClassifier('./utils/haarcascade_frontalface_default.xml')
 
-cfg = "./utils/yolov2-face.cfg"
-weights = "./utils/yolov2.weights"
+cfg = "./utils/tiny-yolo-widerface.cfg"
+weights = "./utils/tiny-yolo-widerface_final.weights"
 net = cv2.dnn.readNet(weights, cfg)
 # net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 # net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
@@ -32,7 +32,7 @@ def valid_face_coord(face):
     return True
 
 def openCV_draw_boundary_box(image, face, p):
-    if p==1:
+    if p==0:
         cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 0, 255), 2)
     else:
         cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 255, 0), 2)
@@ -46,18 +46,19 @@ class CModel:
     self.model = self.read_model_from_file(file_path)
 
   def predict_single(self, image):
-    image = cv2.resize(image, (153, 153), interpolation=cv2.INTER_LINEAR)
+    image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_CUBIC)
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr])
     p = self.model.predict(input_arr, verbose = 0)
-    return round(p[0][0])
+    print(p)
+    return np.argmax(p[0])
 
   def read_model_from_file(self, file_path):
     model = tf.keras.models.load_model(file_path)
     model.summary()
     return model
 
-model = CModel("./utils/model0.h5")
+model = CModel("./utils/modelV3_inception_resnet_v2_35epochs_AIZOO.h5")
 
 skip_frame = 0
 while True:
