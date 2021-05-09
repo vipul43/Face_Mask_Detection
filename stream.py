@@ -5,6 +5,14 @@ import numpy as np
 webcam = cv2.VideoCapture(0)
 # trained_face_data = cv2.CascadeClassifier('./utils/haarcascade_frontalface_default.xml')
 
+#for video input
+# webcam = cv2.VideoCapture('video/input_vinay_vipul_mask_test.mp4')
+# width = int(webcam.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+# height = int(webcam.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+# size = (width, height)
+# fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+# result = cv2.VideoWriter('ouput_vinay_vipul_mask_test.avi', fourcc, 4.0, size)
+
 cfg = "./utils/tiny-yolo-widerface.cfg"
 weights = "./utils/tiny-yolo-widerface_final.weights"
 net = cv2.dnn.readNet(weights, cfg)
@@ -46,27 +54,24 @@ class CModel:
     self.model = self.read_model_from_file(file_path)
 
   def predict_single(self, image):
-    image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_CUBIC)
+    image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_NEAREST)
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr])
-    p = self.model.predict(input_arr, verbose = 0)
-    print(p)
-    return np.argmax(p[0])
+    p = self.model.predict(input_arr, verbose = 0)[0]
+    return np.argmax(p)
 
   def read_model_from_file(self, file_path):
     model = tf.keras.models.load_model(file_path)
     model.summary()
     return model
 
-model = CModel("./utils/modelV3_inception_resnet_v2_35epochs_AIZOO.h5")
+model = CModel("./utils/modelV3_mobile_net_v2_10epochs_AIZOO_rescaling.h5")
 
 skip_frame = 0
 while True:
     is_frame_read_success, frame = webcam.read()
-    print(frame.shape)
-    frame_height, frame_width = frame.shape[:2]
     if is_frame_read_success:
-        print("success")
+        frame_height, frame_width = frame.shape[:2]
         blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
         net.setInput(blob)
         outs = net.forward(get_outputs_names(net))
@@ -89,6 +94,7 @@ while True:
                         p = model.predict_single(cropped_face)
                         openCV_draw_boundary_box(frame, [x, y, x+w, y+h], p)
         cv2.imshow('FACE MASK DETECTOR', frame)
+        # result.write(frame)
         key = cv2.waitKey(1)
     else:
         print("Failed to Load")
