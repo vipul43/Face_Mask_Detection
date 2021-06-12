@@ -9,6 +9,8 @@ import cv2
 import os
 import numpy as np
 import tensorflow as tf
+from imutils.video import FPS
+import time
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
@@ -108,6 +110,9 @@ def test():
 @webApp.route('/video_feed', methods=['GET'])
 def video_feed():
     camera = cv2.VideoCapture(0)
+    # without fps FRAME RATE: 1.082726828253353
+    # without fps FRAME RATE: 1.1389898701336085
+    fps = FPS().start()
     return Response(gen_frames(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
