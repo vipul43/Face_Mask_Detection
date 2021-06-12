@@ -66,35 +66,35 @@ class CModel:
 
 model = CModel("./utils/modelV3_mobile_net_v2_10epochs_AIZOO_rescaling.h5")
 
-def gen_frames(camera):  
+def gen_frames(camera):
     while True:
         success, frame = camera.read()  # read the camera frame
         if not success:
             break
         else:
             # dl on frame
-            # frame_height, frame_width = frame.shape[:2]
-            # blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-            # net.setInput(blob)
-            # outs = net.forward(get_outputs_names(net))
-            # for out in outs:
-            #     for face in out:
-            #         scores = face[5:]
-            #         class_id = np.argmax(scores)
-            #         confidence = scores[class_id]
-            #         if confidence > 0.5:
-            #             center_x = int(face[0] * frame_width)
-            #             center_y = int(face[1] * frame_height)
-            #             w = int(face[2] * frame_width)
-            #             h = int(face[3] * frame_height)
-            #             x = int(center_x - w / 2)
-            #             y = int(center_y - h / 2)
+            frame_height, frame_width = frame.shape[:2]
+            blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+            net.setInput(blob)
+            outs = net.forward(get_outputs_names(net))
+            for out in outs:
+                for face in out:
+                    scores = face[5:]
+                    class_id = np.argmax(scores)
+                    confidence = scores[class_id]
+                    if confidence > 0.5:
+                        center_x = int(face[0] * frame_width)
+                        center_y = int(face[1] * frame_height)
+                        w = int(face[2] * frame_width)
+                        h = int(face[3] * frame_height)
+                        x = int(center_x - w / 2)
+                        y = int(center_y - h / 2)
                     
-            #             face_co_ordinates = [x, y, x+w, y+h]
-            #             if(valid_face_coord(face_co_ordinates)):
-            #                 cropped_face = openCV_image_cropping(frame, [x, y, x+w, y+h])
-            #                 p = model.predict_single(cropped_face)
-            #                 openCV_draw_boundary_box(frame, [x, y, x+w, y+h], p)
+                        face_co_ordinates = [x, y, x+w, y+h]
+                        if(valid_face_coord(face_co_ordinates)):
+                            cropped_face = openCV_image_cropping(frame, [x, y, x+w, y+h])
+                            p = model.predict_single(cropped_face)
+                            openCV_draw_boundary_box(frame, [x, y, x+w, y+h], p)
 
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
