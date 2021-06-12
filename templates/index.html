@@ -22,11 +22,16 @@
             </div>
             <button type="button" class="btn btn-primary" id="btn-predict">Predict!</button>
             <button style="display:none" type="button" class="btn btn-secondary" id="btn-loading">Loading...</button>
+
+            <!-- <button type="button" class="btn btn-primary" id="btn-camera">Camera!</button> -->
+            <a href="/video_feed" class="btn btn-primary" id="btn-camera">Camera!</a>
+            <button style="display:none" type="button" class="btn btn-secondary" id="btn-stop">Stop</button>
         </div>
         <div style="padding-top: 10px;">
             <img style="max-width: 50%;max-height: 40%;" id="user_input"/>
             <img style="max-width: 50%;max-height: 40%;" id="output_image"/>
         </div>
+        <!-- <video id="video" width="640" height="480" autoplay></video> -->
     </div>
 
     <script>
@@ -76,6 +81,27 @@
                     files = null;
                 }
             });
+
+            $("#btn-camera").click(function(){
+                // document.getElementById("btn-camera").style.display = "none";
+                // document.getElementById("btn-stop").style.display = "unset";
+                // // Get access to the camera!
+                // if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                //     // Not adding `{ audio: true }` since we only want video now
+                //     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                //         //video.src = window.URL.createObjectURL(stream);
+                //         video.srcObject = stream;
+                //         video.play();
+                //     });
+                //     var video = document.getElementById('video');
+                //     $("#btn-stop").click(function(){
+                //         document.getElementById("btn-camera").style.display = "unset";
+                //         document.getElementById("btn-stop").style.display = "none";
+                //         video.pause();
+                //     })
+                // }
+            })
+
         });
     </script>
 </body>
