@@ -6,15 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g=" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Face Mask Detector</title>
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <style>
+        #container {
+            margin: 0px auto;
+            border: 10px #333 solid;
+        }
+
+        #videoElement {
+            width: 640px;
+            height: 480px;
+            display: none;
+            background-color: #666;
+        }
+
+        #imageElement {
+            width: 640px;
+            height: 480px;
+            background-color: #666;
+        }
+
+        #canvasElement {
+            width: 640px;
+            height: 480px;
+            border: 1px solid black;
+        }
+
+        #photo {
+            width: 640px;
+            height: 480px;
+
+            border: 1px solid black;
+        }
+    </style>
 </head>
 
 
 <body style="background-color:#383A59">
     <div class="container">
-        <h1 style="text-align:center;color: white;" >Face Mask Detector</h1>
+        <h1 style="text-align:center;color: white;">Face Mask Detector</h1>
         <div>
             <div class="input-group mb-3" style="width:25%">
                 <input type="file" class="custom-file-input" id="file" accept="image/*" onchange="loadFile(event)">
@@ -23,41 +61,39 @@
             <button type="button" class="btn btn-primary" id="btn-predict">Predict!</button>
             <button style="display:none" type="button" class="btn btn-secondary" id="btn-loading">Loading...</button>
 
-            <!-- <button type="button" class="btn btn-primary" id="btn-camera">Camera!</button> -->
-            <a href="/video_feed" class="btn btn-primary" id="btn-camera">Camera!</a>
+            <button type="button" class="btn btn-primary" id="btn-camera">Camera!</button>
+            <!-- <a href="/video_feed" class="btn btn-primary" id="btn-camera">Camera!</a> -->
             <button style="display:none" type="button" class="btn btn-secondary" id="btn-stop">Stop</button>
         </div>
         <div style="padding-top: 10px;">
-            <img style="max-width: 50%;max-height: 40%;" id="user_input"/>
-            <img style="max-width: 50%;max-height: 40%;" id="output_image"/>
+            <img style="max-width: 50%;max-height: 40%;" id="user_input" />
+            <img style="max-width: 50%;max-height: 40%;" id="output_image" />
         </div>
-        <!-- <video id="video" width="640" height="480" autoplay></video> -->
-        <!-- video container -->
-        <!-- <div class="container">
-            <div class="row">
-                <div class="col-lg-8  offset-lg-2"  id="videoStream">
-                    
-                </div>
+        <div id="container">
+            <div>
+                <video autoplay="true" id="videoElement"></video>
+                <canvas id="canvasElement"></canvas>
+                <img id="photo" src="">
             </div>
-        </div> -->
+        </div>
     </div>
 
     <script>
-        var loadFile = function(event) {
+        var loadFile = function (event) {
             var image = document.getElementById('user_input');
             image.src = URL.createObjectURL(event.target.files[0]);
         };
-        $(document).ready(function(){
-            $("#btn-predict").click(function(){
+        $(document).ready(function () {
+            $("#btn-predict").click(function () {
                 document.getElementById("btn-predict").style.display = "none";
                 document.getElementById("btn-loading").style.display = "unset";
                 var fd = new FormData();
                 var files = $('#file')[0].files;
-                
+
                 console.log(files);
                 // Check file selected or not
-                if(files.length > 0 ){
-                    fd.append('image',files[0]);
+                if (files.length > 0) {
+                    fd.append('image', files[0]);
                     console.log(files[0]);
 
                     $.ajax({
@@ -66,23 +102,23 @@
                         data: fd,
                         contentType: false,
                         processData: false,
-                        success: function(response){
-                            if(response != 0){
+                        success: function (response) {
+                            if (response != 0) {
                                 bytestring = response['b64image'];
                                 image = bytestring.split('\'')[1];
-                                $('#output_image').attr('src' , 'data:image/jpg;base64,'+image);
+                                $('#output_image').attr('src', 'data:image/jpg;base64,' + image);
                                 document.getElementById("btn-predict").style.display = "unset";
                                 document.getElementById("btn-loading").style.display = "None";
                                 files = null;
-                            }else{
+                            } else {
                                 alert('file not uploaded');
                                 document.getElementById("btn-predict").style.display = "unset";
-                                document.getElementById("btn-loading").style.display = "None"; 
+                                document.getElementById("btn-loading").style.display = "None";
                                 files = null;
                             }
                         }
                     });
-                }else{
+                } else {
                     alert("Please select a file or image.");
                     document.getElementById("btn-predict").style.display = "unset";
                     document.getElementById("btn-loading").style.display = "None";
@@ -90,32 +126,73 @@
                 }
             });
 
-            $("#btn-camera").click(function(){
-                // document.getElementById("btn-camera").style.display = "none";
-                // document.getElementById("btn-stop").style.display = "unset";
+            $("#btn-camera").click(function () {
+                document.getElementById("btn-camera").style.display = "none";
+                document.getElementById("btn-stop").style.display = "unset";
+
+                let namespace = "/classify";
+                let video = document.querySelector("#videoElement");
+                let canvas = document.querySelector("#canvasElement");
+                let ctx = canvas.getContext('2d');
+                let photo = document.getElementById('photo');
+                var localMediaStream = null;
+                var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+                function sendSnapshot() {
+                    if (!localMediaStream) {
+                        return;
+                    }
+                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, 300, 150);
+                    let dataURL = canvas.toDataURL('image/jpeg');
+                    socket.emit('input image', dataURL);
+                    socket.on('out-image-event', function (data) {
+                        photo.setAttribute('src', data.image_data);
+                    });
+                }
+                var constraints = {
+                    video: {
+                        width: { min: 640 },
+                        height: { min: 480 }
+                    }
+                };
+                navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                    video.srcObject = stream;
+                    localMediaStream = stream;
+                    setInterval(function () {
+                        sendSnapshot();
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+                // var socket = io('https://localhost:5000');
+                // socket.on('connect', function () {
+                //     console.log("Connected...!", socket.connected)
+                // });
                 // // Get access to the camera!
-                // if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // var video = document.getElementById('inputVideo');
+                // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 //     // Not adding `{ audio: true }` since we only want video now
-                //     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                //     navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
                 //         //video.src = window.URL.createObjectURL(stream);
                 //         video.srcObject = stream;
                 //         video.play();
                 //     });
-                //     var video = document.getElementById('video');
-                //     $("#btn-stop").click(function(){
+                //     $("#btn-stop").click(function () {
                 //         document.getElementById("btn-camera").style.display = "unset";
                 //         document.getElementById("btn-stop").style.display = "none";
-                //         video.pause();
+                //         location.reload();
                 //     })
                 // }
-                // var videoStream = document.getElementById("videoStream");
-                // videoStream.innerHTML += '<img src="/video_feed" width="700vw" height="400vw"></img>';
+                // socket.on('response_back', function (image) {
+                //     const image_id = document.getElementById('image');
+                //     image_id.src = image;
+                // });
 
-                // $("#btn-stop").click(function(){
-                //     document.getElementById("btn-camera").style.display = "unset";
-                //     document.getElementById("btn-stop").style.display = "none";
-                //     videoStream.innerHTML = '<img src="/"></img>';
-                // })
+                $("#btn-stop").click(function () {
+                    document.getElementById("btn-camera").style.display = "unset";
+                    document.getElementById("btn-stop").style.display = "none";
+                    location.reload();
+                })
             })
         });
     </script>
