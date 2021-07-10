@@ -51,16 +51,18 @@ def valid_face_coord(face):
 
 
 def openCV_draw_boundary_box(image, face, p):
-    if p == 1:
+    if p == 0:
         # red color === without mask
-        cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 0, 255), 2)
+        cv2.rectangle(image, (face[0], face[1]),
+                      (face[2], face[3]), (255, 0, 0), 2)
     else:
         # green color === with mask
-        cv2.rectangle(image, (face[0], face[1]), (face[2], face[3]), (0, 255, 0), 2)
+        cv2.rectangle(image, (face[0], face[1]),
+                      (face[2], face[3]), (0, 255, 0), 2)
 
 
 def openCV_image_cropping(img, face):
-    crop_img = img[face[1] : face[3], face[0] : face[2]]
+    crop_img = img[face[1]: face[3], face[0]: face[2]]
     return crop_img
 
 
@@ -94,7 +96,6 @@ def magic(frame):
     outs = net.forward(get_outputs_names(net))
     for out in outs:
         for face in out:
-            print(face)
             scores = face[5:]
             class_id = np.argmax(scores)
             confidence = scores[class_id]
@@ -108,7 +109,8 @@ def magic(frame):
 
                 face_co_ordinates = [x, y, x + w, y + h]
                 if valid_face_coord(face_co_ordinates):
-                    cropped_face = openCV_image_cropping(frame, [x, y, x + w, y + h])
+                    cropped_face = openCV_image_cropping(
+                        frame, [x, y, x + w, y + h])
                     p = model.predict_single(cropped_face)
                     openCV_draw_boundary_box(frame, [x, y, x + w, y + h], p)
     return frame
@@ -127,14 +129,18 @@ def index():
 
 @socketio.on("input image", namespace="/classify")
 def classify(input):
-    input = input.split(",")[1]
-    image_data = input
-    image_bytes = base64.b64decode(image_data)
-    image = Image.open(io.BytesIO(image_bytes))
+    image_bytes = input.split(",")[1]
+    image_bytes = base64.b64decode(image_bytes)
+    image = Image.open(io.BytesIO(image_bytes))  # PIL image
     image_array = np.array(image)
     image_array = magic(image_array)
-    image_bytes = bytes(Image.fromarray(image_array).tobytes())
-    image_data = "data:image/jpeg;base64," + str(image_data)
+    image = Image.fromarray(image_array)
+
+    buffered = io.BytesIO()
+    image.save(buffered, format="JPEG")
+    image_bytes = base64.b64encode(buffered.getvalue())
+    image_string = image_bytes.decode('utf-8')
+    image_data = "data:image/jpeg;base64," + str(image_string)
     emit("out-image-event", {"image_data": image_data}, namespace="/classify")
 
 

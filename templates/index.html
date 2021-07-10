@@ -16,35 +16,24 @@
     <title>Face Mask Detector</title>
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     <style>
-        #container {
-            margin: 0px auto;
-            border: 10px #333 solid;
-        }
-
         #videoElement {
-            width: 640px;
-            height: 480px;
-            display: none;
-            background-color: #666;
-        }
-
-        #imageElement {
-            width: 640px;
-            height: 480px;
-            background-color: #666;
+            width: 480px;
+            height: 320px;
+            border: 1px solid black;
+            float: left;
         }
 
         #canvasElement {
             width: 640px;
             height: 480px;
-            border: 1px solid black;
+            display: none;
         }
 
         #photo {
-            width: 640px;
-            height: 480px;
-
+            width: 480px;
+            height: 320px;
             border: 1px solid black;
+            float: right;
         }
     </style>
 </head>
@@ -164,29 +153,6 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
-                // var socket = io('https://localhost:5000');
-                // socket.on('connect', function () {
-                //     console.log("Connected...!", socket.connected)
-                // });
-                // // Get access to the camera!
-                // var video = document.getElementById('inputVideo');
-                // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                //     // Not adding `{ audio: true }` since we only want video now
-                //     navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
-                //         //video.src = window.URL.createObjectURL(stream);
-                //         video.srcObject = stream;
-                //         video.play();
-                //     });
-                //     $("#btn-stop").click(function () {
-                //         document.getElementById("btn-camera").style.display = "unset";
-                //         document.getElementById("btn-stop").style.display = "none";
-                //         location.reload();
-                //     })
-                // }
-                // socket.on('response_back', function (image) {
-                //     const image_id = document.getElementById('image');
-                //     image_id.src = image;
-                // });
 
                 $("#btn-stop").click(function () {
                     document.getElementById("btn-camera").style.display = "unset";
