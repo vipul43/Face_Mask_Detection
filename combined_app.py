@@ -1,5 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit
+from retinaface import RetinaFace
+from werkzeug.utils import secure_filename
 import cv2
 import os
 import numpy as np
@@ -9,8 +11,9 @@ from PIL import Image
 import io
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
-
 webApp = Flask(__name__)
+webApp.config['UPLOAD_FOLDER'] = './uploads'
+webApp.config['DOWNLOAD_FOLDER'] = './downloads'
 socketio = SocketIO(webApp)
 
 cfg = "./utils/tiny-yolo-widerface.cfg"
@@ -65,15 +68,25 @@ class CModel:
 
     def read_model_from_file(self, file_path):
         model = tf.keras.models.load_model(file_path)
-        model.summary()
         return model
 
 
 model = CModel("./utils/modelV3_mobile_net_v2_10epochs_AIZOO_rescaling.h5")
 
 
-def magic(frame):
-    # dl on frame
+def magic1(frame, file_path):
+    resp = RetinaFace.detect_faces(file_path)
+    for r in resp:
+        face = resp[r]
+        if face != [] and valid_face_coord(face['facial_area']) and face["score"] > 0.95:
+            cropped_face = openCV_image_cropping(
+                frame, face["facial_area"])
+            p = model.predict_single(cropped_face)
+            openCV_draw_boundary_box(frame, face['facial_area'], p)
+    return frame
+
+
+def magic2(frame):
     frame_height, frame_width = frame.shape[:2]
     blob = cv2.dnn.blobFromImage(
         frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False
@@ -107,15 +120,35 @@ def index():
     return render_template("index.html")
 
 
+@webApp.route('/predict', methods=['POST'])
+def predict():
+    if request.method == 'POST':
+        f = request.files['image']
+        save_file_name = "temp." + f.filename.split('.')[1]
+        file_path = os.path.join(
+            webApp.config['UPLOAD_FOLDER'], secure_filename(save_file_name))
+        f.save(file_path)
+        image = Image.open(file_path)
+        image_array = np.array(image)
+        image_array = magic1(image_array, file_path)
+        image = Image.fromarray(image_array)
+        file_path_download = os.path.join(
+            webApp.config['DOWNLOAD_FOLDER'], secure_filename(save_file_name))
+        image.save(file_path_download)
+        with open(file_path_download, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+        return jsonify({'b64image': str(encoded_string)})
+    return None
+
+
 @socketio.on("input image", namespace="/classify")
 def classify(input):
     image_bytes = input.split(",")[1]
     image_bytes = base64.b64decode(image_bytes)
     image = Image.open(io.BytesIO(image_bytes))  # PIL image
     image_array = np.array(image)
-    image_array = magic(image_array)
+    image_array = magic2(image_array)
     image = Image.fromarray(image_array)
-
     buffered = io.BytesIO()
     image.save(buffered, format="JPEG")
     image_bytes = base64.b64encode(buffered.getvalue())
