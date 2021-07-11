@@ -18,22 +18,26 @@
     <style>
         #videoElement {
             width: 480px;
-            height: 320px;
+            height: 360px;
             border: 1px solid black;
             float: left;
         }
 
         #canvasElement {
-            width: 640px;
-            height: 480px;
+            width: 480px;
+            height: 360px;
             display: none;
         }
 
         #photo {
             width: 480px;
-            height: 320px;
+            height: 360px;
             border: 1px solid black;
             float: right;
+        }
+
+        #camera {
+            display: none;
         }
     </style>
 </head>
@@ -58,7 +62,7 @@
             <img style="max-width: 50%;max-height: 40%;" id="user_input" />
             <img style="max-width: 50%;max-height: 40%;" id="output_image" />
         </div>
-        <div id="container">
+        <div id="camera">
             <div>
                 <video autoplay="true" id="videoElement"></video>
                 <canvas id="canvasElement"></canvas>
@@ -116,6 +120,7 @@
             });
 
             $("#btn-camera").click(function () {
+                document.getElementById("camera").style.display = "unset";
                 document.getElementById("btn-camera").style.display = "none";
                 document.getElementById("btn-stop").style.display = "unset";
 
@@ -140,8 +145,8 @@
                 }
                 var constraints = {
                     video: {
-                        width: { min: 640 },
-                        height: { min: 480 }
+                        width: { min: 480 },
+                        height: { min: 360 }
                     }
                 };
                 navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
@@ -155,6 +160,7 @@
                 });
 
                 $("#btn-stop").click(function () {
+                    document.getElementById("camera").style.display = "none";
                     document.getElementById("btn-camera").style.display = "unset";
                     document.getElementById("btn-stop").style.display = "none";
                     location.reload();

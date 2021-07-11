@@ -1,14 +1,5 @@
-"""
-HOW TO RUN THE FLASK APP? FLASK_APP=app.py flask run
-HOW TO KILL THE FLASK SERVER? Ctrl + C
-HOW TO RUN HOT RELOAD FLASK APP? FLASK_APP=app.py FLASK_ENV=development flask run
-0 -> with mask
-1 -> without mask
-"""
-
 from flask import Flask, request, render_template, Response
 from flask_socketio import SocketIO, emit
-from camera import Camera
 import cv2
 import os
 import numpy as np
@@ -21,7 +12,6 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 webApp = Flask(__name__)
 socketio = SocketIO(webApp)
-camera = Camera()
 
 cfg = "./utils/tiny-yolo-widerface.cfg"
 weights = "./utils/tiny-yolo-widerface_final.weights"
@@ -29,11 +19,7 @@ net = cv2.dnn.readNet(weights, cfg)
 
 
 def get_outputs_names(net):
-    # Get the names of all the layers in the network
     layers_names = net.getLayerNames()
-
-    # Get the names of the output layers, i.e. the layers with unconnected
-    # outputs
     return [layers_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 
@@ -119,12 +105,6 @@ def magic(frame):
 @webApp.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
-
-
-# @webApp.route("/video_feed", methods=["GET"])
-# def video_feed():
-#     fps = FPS().start()
-#     return Response(gen_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 @socketio.on("input image", namespace="/classify")
