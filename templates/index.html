@@ -55,6 +55,7 @@
             <button type="button" class="btn btn-primary" id="btn-camera">Camera!</button>
             <!-- <a href="/video_feed" class="btn btn-primary" id="btn-camera">Camera!</a> -->
             <button style="display:none" type="button" class="btn btn-secondary" id="btn-stop">Stop</button>
+            <button type="button" class="btn btn-primary" id="btn-reset">Reset</button>
         </div>
         <div style="padding-top: 10px;">
             <img style="max-width: 50%;max-height: 40%;" id="user_input" />
@@ -161,6 +162,9 @@
                     document.getElementById("btn-stop").style.display = "none";
                     location.reload();
                 })
+            })
+            $("#btn-reset").click(function () {
+                location.reload();
             })
         });
     </script>
