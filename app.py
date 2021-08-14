@@ -159,4 +159,4 @@ def classify(input):
 
 
 if __name__ == "__main__":
-    socketio.run(webApp)
+    socketio.run(webApp, ssl_context='adhoc', host='0.0.0.0', port=8080)
