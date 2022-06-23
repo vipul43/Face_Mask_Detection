@@ -96,6 +96,7 @@ def magic2(frame):
     outs = net.forward(get_outputs_names(net))
     for out in outs:
         for face in out:
+            print(face)
             scores = face[5:]
             class_id = np.argmax(scores)
             confidence = scores[class_id]
